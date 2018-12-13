@@ -1,0 +1,7 @@
+#yml配置实例
+server:
+  port: 8080
+
+person:
+  id: 1
+  name: tom

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>在线查询系统</title>
+<script src="https://img.hcharts.cn/highcharts/highcharts.js"></script>
+<script src="https://img.hcharts.cn/highcharts/modules/exporting.js"></script>
+<script src="https://img.hcharts.cn/highcharts/modules/series-label.js"></script>
+<script src="https://img.hcharts.cn/highcharts/modules/oldie.js"></script>
+<script
+	src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
+<link rel="stylesheet"
+	  th:href="@{/css/theme.css}"
+	type="text/css" />
+<script src="${pageContext.request.contextPath}/sys/js/modernizr.min.js"></script>
+<!-- urrent reference internal -->
+<script type="text/javascript">
+	$(function(){
+		$('.c').click(function(){
+			$(this).next().slideToggle();
+		});
+	});
+</script>
+</head>
+<body class="wy-body-for-nav" role="document">
+	<div class="wy-grid-for-nav">
+		<nav data-toggle="wy-nav-shift" class="wy-nav-side">
+		<div class="wy-side-scroll">
+			<div class="wy-side-nav-search">
+				<a href="${pageContext.request.contextPath}/detail.action">在线查询</a>
+				<div class="version">1.0</div>
+				<div role="search">
+					<form id="rtd-search-form" class="wy-form" action="search.html"
+						method="get">
+						<input type="text" name="q" />
+						<!--  placeholder="Search docs"  -->
+						<input type="hidden" name="check_keywords" value="yes" /> <input
+							type="hidden" name="area" value="default" />
+					</form>
+				</div>
+			</div>
+			<div class="wy-menu wy-menu-vertical" data-spy="affix"
+				role="navigation" aria-label="main navigation">
+
+				<ul class="current">
+					<li class="toctree-l1 current"><a class="current reference internal" href="${pageContext.request.contextPath}/detail.action">当前在线</a>
+						<ul>
+							<c:if test="${not empty requestScope.nameAll}">
+								<c:forEach var="people" items="${nameAll}"
+									varStatus="vs">
+									<li class="toctree-l2"><a class="reference internal"
+										href="${pageContext.request.contextPath}/display.action?ip=${nameAll[(vs.count)-1]}">${nameAll[(vs.count)-1]}</a></li>
+								</c:forEach>
+							</c:if>
+						</ul></li>
+						<div class='word'>
+						<span>最近登入时间:${recentleave}</span> <br> <span>当前在线:${recentcome}[[${session.username}]]</span>
+						</div>
+					<li class="toctree-l1 current"><a
+						class="current reference internal" href="${pageContext.request.contextPath}/detail.action">当前在线人数(${count})</a>
+						<ul>
+							<c:if test="${not empty requestScope.iplist}">
+								<c:forEach var="people" items="${iplist}"
+									varStatus="vs">
+									<li class="toctree-l2"><a class="reference internal"
+										href="${pageContext.request.contextPath}/display.action?ip=${iplist[(vs.count)-1]}">${iplist[(vs.count)-1]}</a></li>
+								</c:forEach>
+							</c:if>
+						</ul></li>
+
+				</ul>
+			</div>
+		</div>
+		</nav>
+
+		<section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+
+		<nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+		<i data-toggle="wy-nav-top" class="fa fa-bars"></i> <a
+			href="contents.html"></a> </nav>
+
+
+		<div class="wy-nav-content">
+			<div class="rst-content">
+
+				<div role="navigation" aria-label="breadcrumbs navigation">
+					<ul class="wy-breadcrumbs">请输入选择日期
+					</ul>
+					<hr />
+				</div>
+				<div class="section">
+					<!-- id="django" -->
+					<!-- [ 12, 10, 7, 15, 11, 12, 13 ] -->
+					<form name="reg_testdate"
+						action="${pageContext.request.contextPath}/query.action">
+						<select name="YYYY" onchange="YYYYDD(this.value)">
+							<option value="">请选择 年</option>
+						</select> <select name="MM" onchange="MMDD(this.value)">
+							<option value="">选择 月</option>
+						</select> <select name="DD">
+							<option value="">选择 日</option>
+						</select> <input type="text" name="name" style="border-radius: 10px;">
+						<button value="查询" style="border-radius: 10px;">查询</button>
+					</form>
+					<br> <span>用户:${name }</span> <br> <span>当日登入时间:${cometime }</span>
+					<br> <span>当日登出:${leavetime }</span> <br> <span>当日在线:${result}h</span>
+
+					<div id="container" style="max-width: 800px; height: 400px"></div>
+					<!-- [ {
+								name : '在线时长',
+								data :arr
+							} ] -->
+					<script>
+						var cze="<%=request.getAttribute("array")%>";
+						cze = cze.substring(1, cze.length - 1).split(",");
+
+						var arr = new Array();
+
+						arr[0] = parseInt(cze[0]);
+						arr[1] = parseInt(cze[1]);
+						arr[2] = parseInt(cze[2]);
+						arr[3] = parseInt(cze[3]);
+						arr[4] = parseInt(cze[4]);
+						arr[5] = parseInt(cze[5]);
+						arr[6] = parseInt(cze[6]);
+
+						var chart = Highcharts.chart('container', {
+							title : {
+								text : '近七天在线时长分析'
+							},
+							subtitle : {
+								text : '数据来源：SqlServer'
+							},
+							xAxis : {
+								title : {
+									text : " "
+								}
+							},
+							yAxis : {
+								title : {
+									text : '时长(h)'
+								}
+							},
+							legend : {
+								layout : 'vertical',
+								align : 'right',
+								verticalAlign : 'middle'
+							},
+							plotOptions : {
+								series : {
+									label : {
+										connectorAllowed : false
+									},
+									pointStart : 1
+								}
+							},
+							series : [ {
+								name : '在线时长',
+								data : arr
+							} ],
+							responsive : {
+								rules : [ {
+									condition : {
+										maxWidth : 500
+									},
+									chartOptions : {
+										legend : {
+											layout : 'horizontal',
+											align : 'center',
+											verticalAlign : 'bottom'
+										}
+									}
+								} ]
+							}
+						});
+					</script>
+				</div>
+
+				<script type="text/javascript">
+					var DOCUMENTATION_OPTIONS = {
+						URL_ROOT : './',
+						VERSION : '1.5',
+						COLLAPSE_INDEX : false,
+						FILE_SUFFIX : '.html',
+						HAS_SOURCE : true
+					};
+				</script>
+				<script type="text/javascript"
+					src="${pageContext.request.contextPath}/sys/js/jquery.js"></script>
+				<script type="text/javascript"
+					src="${pageContext.request.contextPath}/sys/js/underscore.js"></script>
+				<script type="text/javascript"
+					src="${pageContext.request.contextPath}/sys/js/doctools.js"></script>
+				<script type="text/javascript"
+					src="${pageContext.request.contextPath}/sys/js/theme.js"></script>
+				<script type="text/javascript">
+					jQuery(function() {
+						SphinxRtdTheme.StickyNav.enable();
+					});
+				</script>
+
+				<script language="JavaScript">
+					function YYYYMMDDstart() {
+						MonHead = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30,
+								31 ];
+
+						//先给年下拉框赋内容
+						var y = new Date().getFullYear();
+						for (var i = (y - 1); i < (y + 10); i++)
+							//以今年为准，前30年，后30年
+							document.reg_testdate.YYYY.options.add(new Option(
+									" " + i + " 年", i));
+
+						//赋月份的下拉框
+						for (var i = 1; i < 13; i++)
+							document.reg_testdate.MM.options.add(new Option(" "
+									+ i + " 月", i));
+
+						document.reg_testdate.YYYY.value = y;
+						document.reg_testdate.MM.value = new Date().getMonth() + 1;
+						var n = MonHead[new Date().getMonth()];
+						if (new Date().getMonth() == 1 && IsPinYear(YYYYvalue))
+							n++;
+						writeDay(n); //赋日期下拉框Author:meizz
+						document.reg_testdate.DD.value = new Date().getDate();
+					}
+					if (document.attachEvent)
+						window.attachEvent("onload", YYYYMMDDstart);
+					else
+						window.addEventListener('load', YYYYMMDDstart, false);
+					function YYYYDD(str) //年发生变化时日期发生变化(主要是判断闰平年)
+					{
+						var MMvalue = document.reg_testdate.MM.options[document.reg_testdate.MM.selectedIndex].value;
+						if (MMvalue == "") {
+							var e = document.reg_testdate.DD;
+							optionsClear(e);
+							return;
+						}
+						var n = MonHead[MMvalue - 1];
+						if (MMvalue == 2 && IsPinYear(str))
+							n++;
+						writeDay(n)
+					}
+					function MMDD(str) //月发生变化时日期联动
+					{
+						var YYYYvalue = document.reg_testdate.YYYY.options[document.reg_testdate.YYYY.selectedIndex].value;
+						if (YYYYvalue == "") {
+							var e = document.reg_testdate.DD;
+							optionsClear(e);
+							return;
+						}
+						var n = MonHead[str - 1];
+						if (str == 2 && IsPinYear(YYYYvalue))
+							n++;
+						writeDay(n)
+					}
+					function writeDay(n) //据条件写日期的下拉框
+					{
+						var e = document.reg_testdate.DD;
+						optionsClear(e);
+						for (var i = 1; i < (n + 1); i++)
+							e.options.add(new Option(" " + i + " 日", i));
+					}
+					function IsPinYear(year)//判断是否闰平年
+					{
+						return (0 == year % 4 && (year % 100 != 0 || year % 400 == 0));
+					}
+					function optionsClear(e) {
+						e.options.length = 1;
+					}
+				</script>
+
+				<script type="text/javascript"
+					src="http://docs.pythontab.com/static/js/global.js"></script>
+				<script type="text/javascript">
+					var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://"
+							: " http://");
+					document
+							.write(unescape("%3Cscript src='"
+									+ _bdhmProtocol
+									+ "hm.baidu.com/h.js%3F141f4ed9eb11f462fa19fdd960639134' type='text/javascript'%3E%3C/script%3E"));
+				</script>
+</body>
+</html>
