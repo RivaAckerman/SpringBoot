@@ -85,6 +85,7 @@
 
     </dependencies>
 
+    <!--这个插件可以将应用打成为一个可执行的jar包 -->
     <build>
         <plugins>
             <plugin>
