@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@SpringBootApplication
+@SpringBootApplication//标注主程序类 说明这是spirngboot应用
 @EnableTransactionManagement//开启事务管理
 @ComponentScan("cn.ahjz")//扫描 将bean加入spring容器
 @MapperScan("cn.ahjz.dao")//与dao层的@Mapper二选一写上即可(主要作用是扫包)
